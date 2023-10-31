@@ -1,0 +1,161 @@
+
+{% capture wpd_discounted_prices %}{%- render 'wcp_discount'  wcp_discount:product , wpd_is_render:'yes' -%}{% endcapture %}
+    
+    {%- capture wcp_price -%}{%- render 'wcp_render_discount' , wpd_discounted_prices:wpd_discounted_prices, price_variable:'wcp_price' -%}{%- endcapture -%}
+    {% assign  wcp_price = wcp_price | minus: 0 %}
+    
+    {%- capture wcp_compare_at_price  -%}{%- render 'wcp_render_discount', wpd_discounted_prices:wpd_discounted_prices, price_variable:'wcp_compare_at_price' -%}{%- endcapture -%}
+    {% if wcp_compare_at_price != blank %}
+        {% assign  wcp_compare_at_price = wcp_compare_at_price | minus: 0 %}
+    {% else %}
+    {% assign  wcp_compare_at_price = nil %}
+    {% endif %}
+    
+    {%- capture wcp_compare_at_price_min  -%}{%- render 'wcp_render_discount' , wpd_discounted_prices:wpd_discounted_prices, price_variable:'wcp_compare_at_price_min' -%}{%- endcapture -%}
+    {% assign  wcp_compare_at_price_min = wcp_compare_at_price_min | minus: 0 %}
+    
+    {%- capture wcp_compare_at_price_max  -%}{%- render 'wcp_render_discount', wpd_discounted_prices:wpd_discounted_prices, price_variable:'wcp_compare_at_price_max' -%}{%- endcapture -%}
+    {% assign  wcp_compare_at_price_max = wcp_compare_at_price_max | minus: 0 %}
+    
+    {%- capture wcp_price_min -%}{%- render 'wcp_render_discount' , wpd_discounted_prices:wpd_discounted_prices, price_variable:'wcp_price_min' -%}{%- endcapture -%}
+    {% assign  wcp_price_min = wcp_price_min | minus: 0 %}
+    
+    {%- capture wcp_price_max -%}{%- render 'wcp_render_discount' , wpd_discounted_prices:wpd_discounted_prices, price_variable:'wcp_price_max' -%}{%- endcapture -%}
+    {% assign  wcp_price_max = wcp_price_max | minus: 0 %}
+    
+    
+    {%- capture v_discount_tag -%}{%-render 'wcp_render_discount' , wpd_discounted_prices:wpd_discounted_prices, price_variable:'v_discount_tag'-%}{%- endcapture -%}
+    {% assign v_discount_tag = v_discount_tag | strip %}
+    
+    {%- capture p_discount_tag -%}{%- render 'wcp_render_discount' , wpd_discounted_prices:wpd_discounted_prices, price_variable:'p_discount_tag' -%}{%- endcapture -%}
+    {% assign p_discount_tag = p_discount_tag | strip %}
+    
+    {% assign raw_set_prices = product.metafields.wcp_set_prices.wcp_set_prices %}
+    {% assign set_prices_array = blank %}
+    {% if raw_set_prices %}
+        {% assign set_prices_array = raw_set_prices | split: ',' %}
+    {% endif %}
+    
+    {%- capture wcp_discount_value -%}{%- render 'wcp_render_discount' , wpd_discounted_prices:wpd_discounted_prices, price_variable:'wcp_discount_value' -%}{%- endcapture -%}
+    
+    {% capture wcp_v_discounted_prices %}{%- render 'wcp_variant' , wcp_variant:product.selected_or_first_available_variant , set_prices_array:set_prices_array , wpd_is_render:'yes', v_discount_tag : v_discount_tag , wcp_discount_value : wcp_discount_value -%}{%- endcapture -%}
+    
+    {%- capture wcp_v_price -%}{%- render 'wcp_render_discount' , wpd_discounted_prices:wcp_v_discounted_prices, price_variable:'wcp_v_price' -%}{%- endcapture -%}
+    {% assign  wcp_v_price = wcp_v_price | minus: 0 %}
+    
+    {%- capture wcp_v_compare_at_price -%}{%- render 'wcp_render_discount' , wpd_discounted_prices:wcp_v_discounted_prices, price_variable:'wcp_v_compare_at_price' -%}{%- endcapture -%}
+    {% if wcp_v_compare_at_price != blank %}
+        {% assign  wcp_v_compare_at_price = wcp_v_compare_at_price | minus: 0 %}
+    {% else %}
+    {% assign  wcp_v_compare_at_price = nil %}
+    {% endif %}
+{% comment %} card_style {% endcomment %}
+{% if card_style == nil or card_style == blank %}
+  {%- assign card_style = settings.pcard_layout -%}
+{% endif %}
+
+{%- assign show_title = true -%}
+{% if hide_title == true %}
+  {%- assign show_title = false -%}
+{% endif %}
+
+{% comment %} image_ratio {% endcomment %}
+{% if image_ratio == nil or image_ratio == blank %}
+  {%- assign image_ratio = settings.pcard_image_ratio | default: '1/1' -%}
+{% endif %}
+{%- if image_ratio == 'original' -%}
+  {%- assign image_ratio = product.featured_image.aspect_ratio | default: '1/1' -%}
+{%- endif -%}
+
+{% comment %} show_vendor {% endcomment %}
+{% if show_vendor == nil %}
+  {% assign show_vendor = settings.show_vendor %}
+{% endif %}
+
+{% comment %} sold_out {% endcomment %}
+{% assign sold_out = true %}
+{% assign variant = product.selected_or_first_available_variant %}
+{% if variant.available %}
+  {% assign sold_out = false %}
+{% endif %}
+{% for variant in product.variants %}
+  {% if variant.inventory_management == 'shopify' and variant.inventory_policy == 'continue' and variant.inventory_quantity == 0 %}
+    {% assign sold_out = false %}
+    {% break %}
+  {% endif %}
+{% endfor %}
+
+{% comment %} on_sale {% endcomment %}
+{%- assign compare_at_price = wcp_v_compare_at_price -%}
+{%- assign price = wcp_v_price -%}
+{% assign on_sale = false %}
+{% if compare_at_price > price %}
+  {% assign on_sale = true %}
+{% endif %}
+{%- capture card_sale_class -%}
+  {% if sold_out %} sf__pcard--soldout {% endif %}{% if on_sale %}sf__pcard--onsale{% endif %}
+{%- endcapture -%}
+
+{% comment %} quick_add_text {% endcomment %}
+{% assign quick_add_text = 'products.product.quick_add' | t %}
+{%- unless product.has_only_default_variant -%}
+  {%- capture quick_add_text -%}{% render 'new-locale', key: 'products.product.select_options' %}{%- endcapture -%}
+{%- endunless -%}
+
+{% assign sold_number = product.metafields.foxkit.sold_number %}
+{%- if column_wrapper -%}<div class="sf-column">{%- endif -%}
+  {%- case card_style -%}
+    {%- when '1' -%}
+      {% render 'product-card-1',
+        product: product,
+        card_sale_class: card_sale_class,
+        image_ratio: image_ratio,
+        show_vendor: show_vendor,
+        sold_out: sold_out,
+        quick_add_text: quick_add_text,
+        show_title: show_title,
+        sold_number: sold_number
+      %}
+    {%- when '2' -%}
+      {% render 'product-card-2',
+        product: product,
+        card_sale_class: card_sale_class,
+        image_ratio: image_ratio,
+        show_vendor: show_vendor,
+        sold_out: sold_out,
+        quick_add_text: quick_add_text,
+        show_title: show_title,
+        sold_number: sold_number
+      %}
+    {%- when '3' -%}
+      {% render 'product-card-3',
+        product: product,
+        card_sale_class: card_sale_class,
+        image_ratio: image_ratio,
+        show_vendor: show_vendor,
+        sold_out: sold_out,
+        quick_add_text: quick_add_text,
+        show_title: show_title,
+        sold_number: sold_number
+      %}
+    {%- when '4' -%}
+      {% render 'product-card-4',
+        product: product,
+        card_sale_class: card_sale_class,
+        image_ratio: image_ratio,
+        show_vendor: show_vendor,
+        sold_out: sold_out,
+        quick_add_text: quick_add_text,
+        show_title: show_title,
+        sold_number: sold_number
+      %}
+    {%- else -%}
+      <div style="display: none;">Missing snippet for product-card-{{ card_style }}.liquid </div>
+  {%- endcase -%}
+{%- if column_wrapper -%}</div>{%- endif -%}
+{%- assign wcp_prd_var = product -%}
+{%- unless wcp_prd_var == empty -%}
+            <script type='application/json' class='{%- for wcp_v in wcp_prd_var.variants -%} wcp_json_{{wcp_v.id}} {%- endfor -%} wcp_json_{{ wcp_prd_var.id }} wcp_json' id='wcp_json_{{ wcp_prd_var.id }}' > 
+                {%- render 'wcp_product_json' with wcp_prd_var -%}
+            </script>
+{%- endunless -%}

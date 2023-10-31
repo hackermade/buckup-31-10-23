@@ -1,0 +1,20 @@
+<!-- -------------------------------------- -->
+<!--         Think Plus | code:head         -->
+<!-- -------------------------------------- -->
+
+<link
+  href="{{ 'thinkplus-style.main.min.css' | asset_url }}"
+  rel="stylesheet"
+/>
+
+{%- if template contains "list-collections" -%}  
+<link href="{{ 'thinkplus-style.list-collections.min.css' | asset_url }}" rel="stylesheet" />
+{%- endif -%}
+{%- if template contains "collection" -%}  
+<link href="{{ 'thinkplus-style.collection.min.css' | asset_url }}" rel="stylesheet" />
+{%- endif -%}
+{%- if template contains "index" -%}  
+<link href="{{ 'thinkplus-style.index.min.css' | asset_url }}" rel="stylesheet" />
+{%- endif -%}
+<link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
+<link href="{{ 'thinkplus-style.quiz.min.css' | asset_url }}" rel="stylesheet" />

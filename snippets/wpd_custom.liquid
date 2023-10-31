@@ -1,0 +1,160 @@
+<style>
+  .prod__price_wpd {
+    font-weight: 600;
+  }
+  .prod__tag-discounted {
+    display: none !important;
+  }
+  .prod__compare_price,
+  .scd-item__original-price,
+  .sf-cart__item--regular-price {
+    display: none;
+  }
+  .wcp-discounts-wrapper {
+    display: flex;
+    align-items: end;
+    flex-direction: column;
+  }
+  #wcp-discount-code {
+    max-width: unset;
+    margin-right: 0;
+    margin-top: 10px;
+  }
+  #apply-wcp-discount {
+    /*background-color: var(--color-btn-bg,var(--color-primary));
+    border-color: var(--color-btn-bg,var(--color-primary));
+    color: var(--color-btn-text,#fff);*/
+    background-color: #256e6f!important;
+    color: #fff!important;
+    margin-top: 10px!important;
+  }
+  #apply-wcp-discount:hover {
+    background-color: var(--color-btn-bg-hover);
+    border: 0!important;
+  }
+  div[data-cart-subtotal] {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    justify-content: flex-end;
+  }
+  .sf-cart-subtotal__title {
+    width: 100%;
+    text-align: right;
+  }
+  span[data-cart-subtotal-price] {
+    width: 100% !important;
+  }
+  .wcp-original-cart-total {
+    display: flex;
+    justify-content: flex-end;
+  }
+  .wcp-discounts-wrapper > * {
+    width: 100%
+  }
+  .wcp-cart-total {
+    text-align: right;
+    display: block;
+  }
+  #MainContent .account-ui-fix {
+    display: none !important;
+  }
+  .wcp-original-cart-total {
+    text-decoration: line-through;
+  }
+  .sf-cart-subtotal__title {
+        text-align: right !important;
+  }
+</style>
+
+{% if template == 'cart' %}
+<style>
+  .sf-cart__summary-row{
+    display: block!important;
+  }
+  .sf-cart-subtotal__title{
+    display: block!important;
+    width: 100%!important;
+    text-align: right;
+  }
+  #wcp-discount-code,
+  #apply-wcp-discount{
+    width: 100%!important;
+  }
+  .sf-cart-subtotal__price{
+    text-align: right;
+    display: block;
+  }
+  .additional-checkout-buttons.w-full {
+    display: none;
+  }
+</style>
+<script>
+  setTimeout(() => {
+
+    if(document.querySelector('.wcp-cart-total').innerHTML == ""){
+      //console.log('==============');
+      document.querySelector('.wcp-cart-total').style.padding = "0";
+      document.querySelector('.wcp-original-cart-total').style.padding = "0";
+    }
+
+    /* Change text */
+    document.querySelector('#wcp-discount-code').placeholder = "Κωδικός έκπτωσης";
+    
+  }, '1500');
+</script>
+{% endif %}
+
+{% assign customersTagsDowncased = customer.tags | downcase %}
+{% if customersTagsDowncased contains "wholesale" %}
+{% else %}
+  <style>
+div[data-cart-subtotal] {
+    flex-direction: unset;
+}
+  .sf-cart-subtotal__title {
+    text-align: left;
+    width: unset;
+}
+</style>
+{% endif %}
+{% assign wcp_wholesale_customer = false %}
+{% if shop.metafields.wcp_status.wcp_status != 'disabled' and customer %}
+{% assign active_discounts = shop.metafields.wcp_active_discounts.wcp_active_discounts %}
+{% assign active_discounts_array = active_discounts | split: ',' %}
+{% assign customer_tags = blank %}
+{% for tag in customer.tags %}
+{% assign tempTag = tag | downcase %}
+{% assign customer_tags = customer_tags | prepend:tempTag %}
+{% unless forloop.last %}
+{% assign customer_tags = customer_tags | prepend:',' %}
+{% endunless %}
+{% endfor %}
+{% assign customer_tags = customer_tags | split:',' %}
+{% assign active_discounts = active_discounts | downcase %}
+{% for discount_key in active_discounts_array %}
+{% assign key_split = discount_key | split: '-' %}
+{% assign key_split_length = key_split | size %}
+{% if key_split_length > 2 %}
+{% assign removeable_key = key_split.last | prepend: '-' %}
+{% assign wcp_customer_tag = discount_key | remove_last: removeable_key %}
+{% else %}
+{% assign wcp_customer_tag = key_split[0] %}
+{% endif %}
+{% assign wcp_customer_tag = wcp_customer_tag | downcase %}
+{% if customer_tags contains wcp_customer_tag %}
+{% assign wcp_wholesale_customer = true %}
+{% endif %}
+{% endfor %}
+{% endif %}
+
+
+
+{% if wcp_wholesale_customer == true %}
+  {% else %}
+  <style>
+    .wcp-original-cart-total {
+      text-decoration: unset;
+    }
+  </style>
+{% endif %}

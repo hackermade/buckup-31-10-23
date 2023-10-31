@@ -1,0 +1,34 @@
+{%- form 'contact' -%}
+          {%- capture success_message -%}
+            {{ 'contact.form.post_success' | t }}
+          {%- endcapture -%}
+
+          <div>
+            <div class="form-group">
+                <input class="form-control" type="text" placeholder="{{ 'contact.form.name' | t }}*"
+                    name="contact[name]" id="inputName" required>
+                <input class="form-control" type="text" placeholder="{{ 'contact.form.last_name' | t }}*"
+                name="contact[last_name]" id="inputLastName" required>
+            </div>
+             <div class="form-group">
+                <input class="form-control" type="email" placeholder="{{ 'contact.form.email' | t }}*"
+                    name="contact[email]" id="inputEmail" required>
+                <input class="form-control" type="tel" placeholder="{{ 'contact.form.phone' | t }}*"
+                name="contact[phone]" id="inputPhone" required>
+            </div>
+            <div class="form-group">
+                <input class="form-control" type="text" placeholder="{{ 'contact.form.business' | t }}*"
+                    name="contact[business]" id="inputBusiness" required>
+                <input class="form-control" type="text" placeholder="{{ 'contact.form.instagram' | t }}*"
+                name="contact[instagram]" id="inputInstagram" required>
+            </div>
+          </div>
+          <div class="">
+            <div class="w-full">
+              <textarea class="w-full align-middle" name="contact[body]" rows="5" required placeholder="{{ 'contact.form.message' | t }}*" id="textareaMessage">{%- if form.body -%}{{ form.body }}{%- endif -%}</textarea>
+            </div>
+          </div>
+          {% render 'form__success', form: form, success_message: success_message %}
+          {% render 'form__error', form: form %}
+          <button type="submit" class="sf__btn sf__btn-primary">{{ 'contact.form.send' | t }}</button>
+        {%- endform -%}

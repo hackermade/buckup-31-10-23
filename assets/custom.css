@@ -1,0 +1,11 @@
+
+
+.search-container .text-color-sale-price, 
+.search-container .text-color-regular-price {
+    display: none;
+}
+.prod__compare_price, .scd-item__original-price, .sf-cart__item--regular-price {
+    display: block !important;
+}
+
+.sf-cart__submit-controls {text-transform: capitalize !important;}

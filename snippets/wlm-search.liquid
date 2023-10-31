@@ -1,0 +1,20 @@
+{%- assign w_continue = 'no' -%}
+{% assign wlmHideItem_Search = false %}
+{%  if wlm-search.object_type == 'product' and wlm-search.collections %}
+
+{% for c in wlm-search.collections %}
+
+    {% if c.id == 297832710307 %}
+{% unless customer %}
+{% assign wlmLockON = true %}
+  {% assign wlmHideItem_Search = true %}
+{% else %}
+{% endunless %}
+
+{% endif %}
+{% endfor %}{% endif %}
+
+
+{% if wlmHideItem_Search == true %}{% continue %}{% endif %}
+
+{%- if wlm_is_render == 'yes' -%}{{- w_continue -}}{%-endif-%}
